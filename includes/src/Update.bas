@@ -24,6 +24,7 @@ Sub GetCustomSubmittalsExportLocation()
         Range("Custom_File_Location").Value = True
     End If
     
+    Exit Sub
 errHandle:
     AddLog ("Error: " & Err.Number & vbNewLine & Err.Description)
     e = MsgBox("Error: " & Err.Number & vbNewLine & Err.Description, vbExclamation)
@@ -50,23 +51,41 @@ Sub SetCurrentFolderAsExportLocation()
         ActiveWorkbook.Queries.Item("Submittal").Formula = finalFormula
         
         Range("Query_Formula").Value = finalFormula
-        Range("Custom_File_Location").Value = True
     End If
 
+    Exit Sub
 errHandle:
     AddLog ("Error: " & Err.Number & vbNewLine & Err.Description)
     e = MsgBox("Error: " & Err.Number & vbNewLine & Err.Description, vbExclamation)
 End Sub
 
 Sub RefreshSubmittalQuery()
+    If Range("Custom_File_Location").Value = False Then SetCurrentFolderAsExportLocation
+    
     On Error GoTo errHandle
     ActiveWorkbook.Connections("Query - Submittal").Refresh
     Application.CalculateUntilAsyncQueriesDone
+    
+    ResizeEmailLogTable
+    ResizeOACLogTable
     
     Exit Sub
 errHandle:
     AddLog ("Error: " & Err.Number & vbNewLine & Err.Description)
     If Err.Number = 1004 Then e = MsgBox("ERROR: 1004" & vbNewLine & "This error is likely because the Submittals Export.xlsx file is missing or named incorrectly. Please either select the file in settings or put it back in the same filder of this excel file.", vbExclamation)
+End Sub
+
+Sub ResizeEmailLogTable()
+        Worksheets("Email Log").Rows.EntireRow.Hidden = False
+        queryRowMax = Application.WorksheetFunction.Max(Worksheets("Query").ListObjects("Submittal").ListColumns("Index").DataBodyRange) + 1
+        Worksheets("Email Log").ListObjects("Email_Log_Table").Resize Range("A1:G" & queryRowMax)
+        Worksheets("Email Log").Rows(queryRowMax & ":" & Worksheets("Email Log").Rows.Count).Delete
+        
+End Sub
+
+Sub ResizeOACLogTable() 'TODO
+
+
 End Sub
 
 Sub UpdateSubList()
@@ -90,11 +109,12 @@ Sub UpdateSubList()
     
     For suba = 1 To subList.Count
          Worksheets("Email").ListObjects("Sub_List").DataBodyRange(suba, 1).Value = subList(suba)
+         Worksheets("Email").ListObjects("Sub_List").DataBodyRange(suba, 2).Value = "NO"
     Next suba
     
     Worksheets("Email").ListObjects("Sub_List").Sort.SortFields. _
         Clear
-     Worksheets("Email").ListObjects("Sub_List").Sort.SortFields. _
+    Worksheets("Email").ListObjects("Sub_List").Sort.SortFields. _
         Add2 Key:=Range("Sub_List[[#All],[Subcontractor]]"), SortOn:=xlSortOnValues _
         , Order:=xlAscending, DataOption:=xlSortNormal
     With ActiveWorkbook.Worksheets("Email").ListObjects("Sub_List").Sort
