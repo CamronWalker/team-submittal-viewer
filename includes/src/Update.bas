@@ -76,10 +76,10 @@ errHandle:
 End Sub
 
 Sub ResizeEmailLogTable()
-        Worksheets("Email Log").Rows.EntireRow.Hidden = False
+        Worksheets("Email Table").Rows.EntireRow.Hidden = False
         queryRowMax = Application.WorksheetFunction.Max(Worksheets("Query").ListObjects("Submittal").ListColumns("Index").DataBodyRange) + 1
-        Worksheets("Email Log").ListObjects("Email_Log_Table").Resize Range("A1:G" & queryRowMax)
-        Worksheets("Email Log").Rows(queryRowMax & ":" & Worksheets("Email Log").Rows.Count).Delete
+        Worksheets("Email Table").ListObjects("Email_Table").Resize Range("A1:G" & queryRowMax)
+        Worksheets("Email Table").Rows(queryRowMax & ":" & Worksheets("Email Table").Rows.Count).Delete
         
 End Sub
 
