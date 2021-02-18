@@ -1,6 +1,29 @@
 Attribute VB_Name = "Emailer"
+Sub Emailer_ActiveSub()
+    subcontractor = ActiveCell.Value
+    Emailer_Sub (subcontractor)
+End Sub
 
-Sub Request_Selected_Update()
+Sub Emailer_EachYes()
+    Dim subList As Collection
+    ' Get Collection of Subs to Send
+    Set subList = New Collection
+    subcontractorsArray = Worksheets("Email").ListObjects("Sub_List").DataBodyRange.Value
+    
+    For rt = 1 To UBound(subcontractorsArray)
+        If subcontractorsArray(rt, 2) = "YES" Then
+            e = CollectionAddUnique(subList, CStr(subcontractorsArray(rt, 1)))
+        End If
+    Next rt
+    ' ---------------------------------------------
+    
+    For Each subcont In subList
+        Emailer_Sub (subcont)
+    Next subcont
+
+End Sub
+
+Sub Emailer_Sub(inputSub As String)
     On Error GoTo errHandle
     Dim subcontractor As String
     Dim rngTable As Range
@@ -8,11 +31,11 @@ Sub Request_Selected_Update()
     Dim emailSubjectVar As String
     Dim emailBodyVar As String
     
-    subcontractor = ActiveCell.Value
+    subcontractor = inputSub 'ActiveCell.Value
     
     'Set cl = Worksheets("Contact Log").ListObjects("ContactLog")
     
-    subContactsArray = Worksheets("Contacts").ListObjects("Contacts_Table").DataBodyRange.Value
+    subContactsArray = Worksheets("Contact List").ListObjects("Contacts_Table").DataBodyRange.Value
     'subcontractorsArray = Worksheets("Updates").ListObjects("Subcontractor_Table").DataBodyRange.Value
     
     ' Get Collection of Unique Subs
@@ -33,9 +56,9 @@ Sub Request_Selected_Update()
     For ctsc = 1 To UBound(subContactsArray)
         If subContactsArray(ctsc, 1) = subcontractor Then
             If to_Field = "" Then
-                to_Field = subContactsArray(ctsc, 2) + " <" + subContactsArray(ctsc, 3) + ">"
+                to_Field = subContactsArray(ctsc, 2) + " <" + subContactsArray(ctsc, 4) + ">"
             Else
-                to_Field = to_Field + "; " + subContactsArray(ctsc, 2) + " <" + subContactsArray(ctsc, 3) + ">"
+                to_Field = to_Field + "; " + subContactsArray(ctsc, 2) + " <" + subContactsArray(ctsc, 4) + ">"
             End If
         End If
     Next ctsc
@@ -49,13 +72,21 @@ Sub Request_Selected_Update()
     emailPathToSignVar = Range("Email_Signature_Path").Value
     emailCCVar = Range("Email_CC").Value
     SENDorDISPLAYemailVar = Range("SENDorDISPLAYemail").Value
+    emailAttachment1 = Range("Email_Attachment1").Value
+    emailAttachment2 = Range("Email_Attachment2").Value
     
     If Dir(emailPathToSignVar) <> "" Then
         emailSignature = GetBoiler(emailPathToSignVar)
+        startEmailSignPath = Environ("appdata") & _
+                "\Microsoft\Signatures\"
+        startEmailSignPath = Replace(startEmailSignPath, " ", "%20")
+        emailSignature = Replace(emailSignature, "src=""", "src=""" & startEmailSignPath)
+        emailSignature = Replace(emailSignature, "files/", "files\")
     Else
         emailSignature = ""
     End If
     
+    AddLog (emailSignature)
     emailBodyVar = emailBodyVar + emailSignature
     
 
@@ -70,16 +101,16 @@ Sub Request_Selected_Update()
     
     ' -----------------------------------------
     ' update Template with EMAIL_TABLE
-        testVar = RangetoHTML(rngTable)
+        'testVar = RangetoHTML(rngTable)
         emailBodyVar = Replace(emailBodyVar, "<<EMAIL TABLE>>", RangetoHTML(rngTable))
-            Open ThisWorkbook.Path & "\email body template.htm" For Output As #1
-            Print #1, emailBodyVar
-            Close #1
+            'Open ThisWorkbook.Path & "\email body template.htm" For Output As #1
+            'Print #1, emailBodyVar
+            'Close #1
     
     ' -----------------------------------------
     
     ' create email
-    e = SendEmail(SENDorDISPLAYemailVar, subcontractor, to_Field, emailSubjectVar, emailBodyVar, emailCCVar)
+    e = SendEmail(SENDorDISPLAYemailVar, subcontractor, to_Field, emailSubjectVar, emailBodyVar, emailCCVar, emailAttachment1, emailAttachment2)
     
     ' -----------------------------------------
     
