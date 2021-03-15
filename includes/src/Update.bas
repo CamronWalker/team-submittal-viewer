@@ -62,7 +62,7 @@ End Sub
 Sub RefreshSubmittalQuery()
     If Range("Custom_File_Location").Value = False Then SetCurrentFolderAsExportLocation
     
-    On Error GoTo errHandle
+    'On Error GoTo errHandle
     ActiveWorkbook.Connections("Query - Submittal").Refresh
     Application.CalculateUntilAsyncQueriesDone
     
@@ -76,15 +76,19 @@ errHandle:
 End Sub
 
 Sub ResizeEmailLogTable()
-        Worksheets("Email Table").Rows.EntireRow.Hidden = False
-        queryRowMax = Application.WorksheetFunction.Max(Worksheets("Query").ListObjects("Submittal").ListColumns("Index").DataBodyRange) + 1
-        Worksheets("Email Table").ListObjects("Email_Table").Resize Range("A1:G" & queryRowMax)
-        Worksheets("Email Table").Rows(queryRowMax & ":" & Worksheets("Email Table").Rows.Count).Delete
+    Worksheets("Email Table").Rows.EntireRow.Hidden = False
+    queryRowMax = Application.WorksheetFunction.Max(Worksheets("Query").ListObjects("Submittal").ListColumns("Index").DataBodyRange) + 1
+    Worksheets("Email Table").ListObjects("Email_Table").Resize Range("A1:G" & queryRowMax)
+    Worksheets("Email Table").Rows(queryRowMax & ":" & Worksheets("Email Table").Rows.Count).Delete
         
 End Sub
 
 Sub ResizeOACLogTable() 'TODO
-
+    Worksheets("OAC Log").Rows.EntireRow.Hidden = False
+    Worksheets("OAC Log").ListObjects("OAC_Table").Sort.SortFields.Clear
+    queryRowMax = Application.WorksheetFunction.Max(Worksheets("Query").ListObjects("Submittal").ListColumns("Index").DataBodyRange) + 16
+    Worksheets("OAC Log").ListObjects("OAC_Table").Resize Range("A15:H" & queryRowMax)
+    Worksheets("OAC Log").Rows(queryRowMax & ":" & Worksheets("OAC Log").Rows.Count).Delete
 
 End Sub
 
