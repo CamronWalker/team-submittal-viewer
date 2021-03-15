@@ -43,12 +43,19 @@ Sub Emailer_Sub(inputSub As String)
     'subLogArray = Worksheets("Email Table").ListObjects("EMAIL_TABLE").DataBodyRange.Value
     
     ' Filter by sub / adjust row heights for printing
+    emailHideClosed = Range("Email_Hide_Closed").Value
     Worksheets("Email Table").ListObjects("EMAIL_TABLE").Range.AutoFilter Field:=7, Criteria1:=subcontractor
+    Worksheets("Email Table").ListObjects("Email_Table").Range.AutoFilter Field:=4
+    
+    If emailHideClosed = "HIDE" Then
+        Worksheets("Email Table").ListObjects("Email_Table").Range.AutoFilter Field:=4, Criteria1 _
+            :=Array("Assigned to Sub", "Design Review", "Draft", "Reviewed"), Operator:= _
+            xlFilterValues
+    End If
+    
     Worksheets("Email Table").ListObjects("EMAIL_TABLE").Range.EntireRow.AutoFit
     Worksheets("Email Table").Columns("F:G").Hidden = True
     Set rngTable = Worksheets("Email Table").UsedRange.SpecialCells(xlCellTypeVisible)
-    
-    
     
     ' -----------------------------------------
     ' get emails
