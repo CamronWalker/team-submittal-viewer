@@ -68,6 +68,7 @@ Sub RefreshSubmittalQuery()
     
     ResizeEmailLogTable
     ResizeOACLogTable
+    ResizeMonthlyReportTable
     
     Exit Sub
 errHandle:
@@ -91,6 +92,14 @@ Sub ResizeOACLogTable() 'TODO
     Worksheets("OAC Log").ListObjects("OAC_Table").Resize Range("A15:H" & queryRowMax - 1)
     Worksheets("OAC Log").Rows(queryRowMax & ":" & Worksheets("OAC Log").Rows.Count).Delete
 
+End Sub
+
+Sub ResizeMonthlyReportTable()
+    Worksheets("Monthly Report Table").ListObjects("MonthlyReport_Table").AutoFilter.ShowAllData
+    queryRowMax = Application.WorksheetFunction.Max(Worksheets("Query").ListObjects("Submittal").ListColumns("Index").DataBodyRange) + 1
+    Worksheets("Monthly Report Table").ListObjects("MonthlyReport_Table").Resize Range("A1:G" & queryRowMax)
+    Worksheets("Monthly Report Table").Rows(queryRowMax + 1 & ":" & Worksheets("Monthly Report Table").Rows.Count).Delete
+    
 End Sub
 
 Sub UpdateSubList()
