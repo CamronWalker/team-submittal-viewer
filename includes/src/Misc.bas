@@ -21,6 +21,11 @@ Sub Filter_MonthlyReport()
         Criteria1:=">=" & filterEnd, _
         Operator:=xlOr, _
         Criteria2:="=" & ""
+        
+    Worksheets("Monthly Report Table").ListObjects("MonthlyReport_Table").Range.AutoFilter Field:=5, _
+        Criteria1:=">=" & filterEnd, _
+        Operator:=xlOr, _
+        Criteria2:="=" & ""
 
     Worksheets("Monthly Report").Pictures("LinkedImage_MonthlyReport").Formula = "='Monthly Report Table'!$A$1:$A$" & Worksheets("Monthly Report").Range("B13").Value
     
