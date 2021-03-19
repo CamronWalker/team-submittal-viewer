@@ -37,7 +37,47 @@ Sub Copy_Filtered_Monthly_Report()
 
 End Sub
 
+Function Submittal_Review_Time(designDate, reviewedDate, closedDate, Optional ByVal filterDateStart, Optional ByVal filterDateEnd)
+    
+    'Dim designDate, reviewedDate, closedDate
+    'designDate = Range("C16").Value
+    'reviewedDate = Range("D16").Value
+    'closedDate = Range("E16").Value
+    
+    If IsMissing(filterDateEnd) Then filterDateEnd = Date
+    
+    If designDate = "" Then
+        Submittal_Review_Time = ""
+        Exit Function
+    End If
+    
+    If reviewedDate = "" And closedDate <> "" Then
+        reviewedDate = closedDate
+    End If
+    
+    If reviewedDate = "" And closedDate = "" Then
+        reviewedDate = filterDateEnd
+    End If
+    
+    If reviewedDate - designDate < 0 Then
+        reviewedDate = filterDateEnd
+    End If
+    
+    If designDate > filterDateEnd Then
+        Submittal_Review_Time = ""
+        Exit Function
+    End If
+    
+    Submittal_Review_Time = reviewedDate - designDate
+End Function
+
+
 Sub MakeImageLinkedPicture()
+
+    Dim startDate As Long: startDate = Worksheets("Monthly Report").Range("MonthlyReport_Filter_Start").Value
+    Dim endDate As Long: Worksheets("Monthly Report").Range("MonthlyReport_Filter_End").Value
+    
+
 
 Dim ws As Worksheet
 
