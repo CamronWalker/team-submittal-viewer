@@ -70,6 +70,8 @@ Sub RefreshSubmittalQuery()
     ResizeOACLogTable
     ResizeMonthlyReportTable
     
+    Worksheets("OAC Log").Range("B6").Value = Now
+    
     Exit Sub
 errHandle:
     AddLog ("Error: " & Err.Number & vbNewLine & Err.Description)
