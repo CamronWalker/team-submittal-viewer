@@ -54,7 +54,7 @@ Sub Emailer_Sub(inputSub As String)
     End If
     
     Worksheets("Email Table").ListObjects("EMAIL_TABLE").Range.EntireRow.AutoFit
-    Worksheets("Email Table").Columns("F:G").Hidden = True
+    Worksheets("Email Table").Columns("F:I").Hidden = True
     Set rngTable = Worksheets("Email Table").UsedRange.SpecialCells(xlCellTypeVisible)
     
     ' -----------------------------------------
@@ -115,6 +115,8 @@ Sub Emailer_Sub(inputSub As String)
             'Close #1
     
     ' -----------------------------------------
+    
+    
     
     ' create email
     e = SendEmail(SENDorDISPLAYemailVar, subcontractor, to_Field, emailSubjectVar, emailBodyVar, emailCCVar, emailAttachment1, emailAttachment2)
